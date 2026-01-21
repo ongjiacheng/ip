@@ -8,34 +8,23 @@ public class Tel {
 
         Scanner scanner = new Scanner(System.in);
         String input = "";
-        List<String> list = new ArrayList<>();
-        List<Character> done = new ArrayList<>();
+        List<Task> tasks = new ArrayList<>();
         do {
             if (input.startsWith("mark ")) {
                 int index = Integer.parseInt(input.substring(5));
-                done.set(index - 1, 'X');
+                tasks.get(index - 1).setStatusIcon(true);
                 System.out.println(newLine() + "    Nice! I've marked this task as done:");
-                for (int i = 1; i <= list.size(); i++) {
-                    System.out.println("    " + i + ". [" + done.get(i - 1) + "] " + list.get(i - 1));
-                }
-                System.out.print(newLine());
+                getList(tasks);
             } else if (input.startsWith("unmark ")) {
                 int index = Integer.parseInt(input.substring(7));
-                done.set(index - 1, ' ');
+                tasks.get(index - 1).setStatusIcon(false);
                 System.out.println(newLine() + "    OK, I've marked this task as not done yet:");
-                for (int i = 1; i <= list.size(); i++) {
-                    System.out.println("    " + i + ". [" + done.get(i - 1) + "] " + list.get(i - 1));
-                }
-                System.out.print(newLine());
+                getList(tasks);
             } else if (Objects.equals(input, "list")) {
                 System.out.print(newLine());
-                for (int i = 1; i <= list.size(); i++) {
-                    System.out.println("    " + i + ". " + list.get(i - 1));
-                }
-                System.out.print(newLine());
+                getList(tasks);
             } else if (!Objects.equals(input, "")) {
-                list.add(input);
-                done.add(' ');
+                tasks.add(new Task(input));
                 System.out.println(newLine() + "    added: " + input + "\n" + newLine());
             }
             input = scanner.nextLine();
@@ -46,5 +35,12 @@ public class Tel {
 
     public static String newLine() {
         return "    ____________________________________________________________\n";
+    }
+
+    public static void getList(List<Task> tasks) {
+        for (int i = 1; i <= tasks.size(); i++) {
+            System.out.println(tasks.get(i - 1).getListItem(i));
+        }
+        System.out.print(newLine());
     }
 }
