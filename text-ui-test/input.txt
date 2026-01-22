@@ -6,6 +6,5 @@ mark 1
 mark 4
 todo borrow book
 list
-deadline return book /by Sunday
-event project meeting /from Mon 2pm /to 4 pm
+delete 3
 bye
