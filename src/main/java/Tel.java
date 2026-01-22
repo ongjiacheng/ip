@@ -7,35 +7,53 @@ public class Tel {
         );
 
         Scanner scanner = new Scanner(System.in);
-        String input = "";
+        String input = scanner.nextLine();
         List<Task> tasks = new ArrayList<>();
         do {
-            if (input.startsWith("mark ")) {
-                int index = Integer.parseInt(input.substring(5));
-                doner(tasks, index, true);
-            } else if (input.startsWith("unmark ")) {
-                int index = Integer.parseInt(input.substring(7));
-                doner(tasks, index, true);
-            } else if (input.startsWith("todo")) {
-                Task task = new Todo(input.substring(5));
-                adder(tasks, task);
-            } else if (input.startsWith("deadline")) {
-                List<String> params = new ArrayList<>(Arrays.asList(input.substring(9).split(" /by ")));
-                Task task = new Deadline(params.get(0), params.get(1));
-                adder(tasks, task);
-            } else if (input.startsWith("event")) {
-                List<String> params = new ArrayList<>(Arrays.asList(input.substring(6).split(" /from ")));
-                params.addAll(List.of(params.remove(1).split(" /to ")));
-                Task task = new Event(params.get(0), params.get(1), params.get(2));
-                adder(tasks, task);
-            } else if (Objects.equals(input, "list")) {
-                getList(tasks);
-            } else if (!Objects.equals(input, "")) {
-                Task task = new Todo(input);
-                adder(tasks, task);
+            try {
+                if (input.startsWith("mark")) {
+                    try {
+                        int index = validateNumber(tasks, input, 5);
+                        doner(tasks, index, true);
+                    } catch (IllegalArgumentException i) {
+                        prettyError("needs a number from 1 to " + tasks.size());
+                    }
+                } else if (input.startsWith("unmark")) {
+                    try {
+                        int index = validateNumber(tasks, input, 5);
+                        doner(tasks, index, false);
+                    } catch (IllegalArgumentException i) {
+                        prettyError("needs a number from 1 to " + tasks.size());
+                    }
+                } else if (input.startsWith("todo")) {
+                    Task task = new Todo(input.substring(5));
+                    adder(tasks, task);
+                } else if (input.startsWith("deadline")) {
+                    try {
+                        String[] params = validateSplit(input.substring(9), " /by ");
+                        Task task = new Deadline(params[0], params[1]);
+                        adder(tasks, task);
+                    } catch (IllegalArgumentException i) {
+                        prettyError("should have a /by separator!");
+                    }
+                } else if (input.startsWith("event")) {
+                    try {
+                        String[] params1 = validateSplit(input.substring(6), " /from ");
+                        String[] params2 = validateSplit(params1[1], " /to ");
+                        Task task = new Event(params1[0], params2[0], params2[1]);
+                        adder(tasks, task);
+                    } catch (IllegalArgumentException i) {
+                        prettyError("should have a /from & a /to separator!");
+                    }
+                } else if (Objects.equals(input, "list")) {
+                    getList(tasks);
+                } else {
+                    prettyError("should start with mark/unmark/todo/deadline/event!");
+                }
+            } catch (StringIndexOutOfBoundsException s) {
+                prettyError("cannot be empty!");
             }
             input = scanner.nextLine();
-
         } while(!Objects.equals(input, "bye"));
         System.out.println(newLine() + "\n    Bye. Hope to see you again soon!\n" + newLine());
     }
@@ -71,6 +89,29 @@ public class Tel {
             System.out.println(newLine() + "\n    OK, I've marked this task as not done yet:");
         }
         System.out.println("      " + tasks.get(index - 1));
+        System.out.println(newLine());
+    }
+
+    public static int validateNumber(List<Task> tasks, String input, int start) throws IllegalArgumentException {
+        int index = Integer.parseInt(input.substring(start));
+        if (!(1 <= index && index <= tasks.size())) {
+            throw new IllegalArgumentException();
+        }
+        return index;
+    }
+
+    public static String[] validateSplit(String input, String separator) throws IllegalArgumentException {
+        String[] params = input.split(separator, -1);
+        if (params.length == 2) {
+            return params;
+        } else {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    public static void prettyError(String message) {
+        System.out.println(newLine());
+        System.out.println("    Your input is invalid, it " + message);
         System.out.println(newLine());
     }
 }
