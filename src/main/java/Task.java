@@ -6,11 +6,6 @@ public class Task {
         this.description = description;
         this.isDone = false;
     }
-
-    public String getDescription() {
-        return this.description;
-    }
-
     public String getStatusIcon() {
         return (isDone ? "X" : " ");
     }
@@ -19,7 +14,8 @@ public class Task {
         this.isDone = bool;
     }
 
-    public String getListItem(int index) {
-        return "    " + index + ". [" + this.getStatusIcon() + "] " + this.getDescription();
+    @Override
+    public String toString() {
+        return "[" + this.getStatusIcon() + "] " + this.description;
     }
 }
