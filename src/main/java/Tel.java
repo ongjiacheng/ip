@@ -3,7 +3,7 @@ import java.util.*;
 public class Tel {
     public static void main(String[] args) {
         System.out.println(
-                newLine() + "    Hello! I'm Tel.\n    What can I do for you?\n" + newLine()
+                newLine() + "\n    Hello! I'm Tel.\n    What can I do for you?\n" + newLine()
         );
 
         Scanner scanner = new Scanner(System.in);
