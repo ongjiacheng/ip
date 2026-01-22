@@ -20,12 +20,13 @@ public class Tel {
                 Task task = new Todo(input.substring(5));
                 adder(tasks, task);
             } else if (input.startsWith("deadline")) {
-                List<String> params = List.of(input.substring(9).split("/"));
-                Task task = new Deadline(params.get(0), params.get(1).substring(3));
+                List<String> params = new ArrayList<>(Arrays.asList(input.substring(9).split(" /by ")));
+                Task task = new Deadline(params.get(0), params.get(1));
                 adder(tasks, task);
             } else if (input.startsWith("event")) {
-                List<String> params = List.of(input.substring(6).split("/"));
-                Task task = new Event(params.get(0), params.get(1).substring(5), params.get(2).substring(3));
+                List<String> params = new ArrayList<>(Arrays.asList(input.substring(6).split(" /from ")));
+                params.addAll(List.of(params.remove(1).split(" /to ")));
+                Task task = new Event(params.get(0), params.get(1), params.get(2));
                 adder(tasks, task);
             } else if (Objects.equals(input, "list")) {
                 getList(tasks);
