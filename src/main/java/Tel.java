@@ -12,19 +12,14 @@ public class Tel {
         do {
             try {
                 if (input.startsWith("mark")) {
-                    try {
-                        int index = validateNumber(tasks, input, 5);
-                        doner(tasks, index, true);
-                    } catch (IllegalArgumentException i) {
-                        prettyError("needs a number from 1 to " + tasks.size());
-                    }
+                    int index = validateNumber(tasks, input, 5);
+                    doner(tasks, index, true);
                 } else if (input.startsWith("unmark")) {
-                    try {
-                        int index = validateNumber(tasks, input, 5);
-                        doner(tasks, index, false);
-                    } catch (IllegalArgumentException i) {
-                        prettyError("needs a number from 1 to " + tasks.size());
-                    }
+                    int index = validateNumber(tasks, input, 5);
+                    doner(tasks, index, false);
+                } else if (input.startsWith("delete")) {
+                    int index = validateNumber(tasks, input, 7);
+                    deleter(tasks, index);
                 } else if (input.startsWith("todo")) {
                     Task task = new Todo(input.substring(5));
                     adder(tasks, task);
@@ -52,6 +47,8 @@ public class Tel {
                 }
             } catch (StringIndexOutOfBoundsException s) {
                 prettyError("cannot be empty!");
+            } catch (IllegalArgumentException i) {
+                prettyError("needs a number from 1 to " + tasks.size());
             }
             input = scanner.nextLine();
         } while(!Objects.equals(input, "bye"));
@@ -71,24 +68,32 @@ public class Tel {
         System.out.println(newLine());
     }
 
+    public static void deleter(List<Task> tasks, int index) {
+        System.out.println(newLine());
+        System.out.println("    Noted. I've removed this task:");
+        System.out.println("      " + tasks.get(index - 1));
+        tasks.remove(index - 1);
+        System.out.println("    Now you have " + tasks.size() + " tasks in the list.");
+        System.out.println(newLine());
+    }
+
+    public static void doner(List<Task> tasks, int index, boolean bool) {
+        tasks.get(index - 1).setStatusIcon(bool);
+        if (bool) {
+            System.out.println(newLine() + "\n    Nice! I've marked this task as done:");
+        } else {
+            System.out.println(newLine() + "\n    OK, I've marked this task as not done yet:");
+        }
+        System.out.println("      " + tasks.get(index - 1));
+        System.out.println(newLine());
+    }
+
     public static void getList(List<Task> tasks) {
         System.out.println(newLine());
         System.out.println("    Here are the tasks in your list:");
         for (int i = 1; i <= tasks.size(); i++) {
             System.out.println("    " + i + "." + tasks.get(i - 1));
         }
-        System.out.println(newLine());
-    }
-
-    public static void doner(List<Task> tasks, int index, boolean bool) {
-        if (bool) {
-            tasks.get(index - 1).setStatusIcon(true);
-            System.out.println(newLine() + "\n    Nice! I've marked this task as done:");
-        } else {
-            tasks.get(index - 1).setStatusIcon(false);
-            System.out.println(newLine() + "\n    OK, I've marked this task as not done yet:");
-        }
-        System.out.println("      " + tasks.get(index - 1));
         System.out.println(newLine());
     }
 
