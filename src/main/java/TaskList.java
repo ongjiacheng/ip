@@ -23,7 +23,6 @@ public class TaskList {
     }
 
     public void delete(int index) {
-        Task task = tasks.get(index - 1);
         tasks.remove(index - 1);
     }
 
