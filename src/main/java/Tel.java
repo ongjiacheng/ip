@@ -3,10 +3,12 @@ import java.io.FileWriter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Scanner;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
+import java.util.*;
 
 public class Tel {
     public static void main(String[] args) {
@@ -35,7 +37,8 @@ public class Tel {
                 } else if (input.startsWith("deadline")) {
                     try {
                         String[] params = validateSplit(input.substring(9), " /by ");
-                        Task task = new Deadline(params[0], params[1]);
+                        LocalDateTime ldt = dateConverter(params[1]);
+                        Task task = new Deadline(params[0], ldt);
                         adder(tasks, task);
                     } catch (IllegalArgumentException i) {
                         prettyPrint("Invalid input, /by separator required!");
@@ -44,7 +47,9 @@ public class Tel {
                     try {
                         String[] params1 = validateSplit(input.substring(6), " /from ");
                         String[] params2 = validateSplit(params1[1], " /to ");
-                        Task task = new Event(params1[0], params2[0], params2[1]);
+                        LocalDateTime ldt1 = dateConverter(params2[0]);
+                        LocalDateTime ldt2 = dateConverter(params2[1]);
+                        Task task = new Event(params1[0], ldt1, ldt2);
                         adder(tasks, task);
                     } catch (IllegalArgumentException i) {
                         prettyPrint("Invalid input, /from & a /to separators required!");
@@ -100,6 +105,33 @@ public class Tel {
         System.out.println(newLine());
     }
 
+    public static LocalDateTime dateConverter(String string) {
+        LocalDateTime dt = null;
+        try {
+            boolean check_iso = string.charAt(4) == '-' && string.charAt(7) == '-';
+            boolean check_std = string.charAt(2) == '/' && string.charAt(5) == '/';
+            if (string.length() == 10) {
+                LocalDate d = null;
+                if (check_iso) {
+                    d = LocalDate.parse(string);
+                } else if (check_std) {
+                    d = LocalDate.parse(string, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                }
+                assert d != null;
+                dt = d.atStartOfDay();
+            } else if (string.length() == 16) {
+                if (check_iso) {
+                    dt = LocalDateTime.parse(string);
+                } else if (check_std) {
+                    dt = LocalDateTime.parse(string, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+                }
+            }
+        } catch (DateTimeParseException | NullPointerException n) {
+            prettyPrint("Your datetime is wrong! it should be yyyy-mm-dd or dd/MM/yyyy, with HH:mm if necessary.");
+        }
+        return dt;
+    }
+
     public static List<Task> fileReader() {
         List<Task> tasks = new ArrayList<>();
         File f = new File("./tel.txt");
@@ -108,10 +140,10 @@ public class Tel {
                 String[] data = r.nextLine().split(" \\| ");
                 switch(data[0]) {
                 case "D":
-                    tasks.add(new Deadline(data[2], data[3]));
+                    tasks.add(new Deadline(data[2], LocalDateTime.parse(data[3])));
                     break;
                 case "E":
-                    tasks.add(new Event(data[2], data[3], data[4]));
+                    tasks.add(new Event(data[2], LocalDateTime.parse(data[3]), LocalDateTime.parse(data[4])));
                     break;
                 case "T":
                     tasks.add(new Todo(data[2]));
