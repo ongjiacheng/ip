@@ -29,9 +29,9 @@ public class Storage {
                     tasks.add(new Todo(data[2]));
                     break;
                 default:
-                    throw new IllegalArgumentException();
+                    throw new TelException("Task file is corrupted! Starting from clean state.");
                 }
-                tasks.getTask(tasks.size() - 1).setStatusIcon(Integer.parseInt(data[1]) == 1);
+                tasks.get(tasks.size() - 1).setStatusIcon(Integer.parseInt(data[1]) == 1);
             }
         } catch (FileNotFoundException e) {
             throw new TelException("No task file found! Starting from clean state.");
@@ -44,11 +44,10 @@ public class Storage {
     public void dump(TaskList tasks) throws TelException {
         try {
             FileWriter w = new FileWriter("./tel.txt");
-            for (Task task : tasks.getTaskList()) {
+            for (Task task : tasks.getList()) {
                 w.write(task.toFile() + "\n");
             }
             w.close();
-            System.out.println("Successfully wrote to the file.");
         } catch (IOException e) {
             throw new TelException("State is corrupted! Unable to write to task file.");
         }

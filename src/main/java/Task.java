@@ -7,8 +7,8 @@ public class Task {
         this.isDone = false;
     }
 
-    public String getStatusIcon() {
-        return (isDone ? "X" : " ");
+    public char getStatusIcon() {
+        return (isDone ? 'X' : ' ');
     }
 
     public void setStatusIcon(boolean bool) {
