@@ -1,14 +1,23 @@
-import java.util.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Scanner;
 
 public class Tel {
     public static void main(String[] args) {
+        List<Task> tasks = fileReader();
+
         System.out.println(
                 newLine() + "\n    Hello! I'm Tel.\n    What can I do for you?\n" + newLine()
         );
 
         Scanner scanner = new Scanner(System.in);
         String input = scanner.nextLine();
-        List<Task> tasks = new ArrayList<>();
         do {
             try {
                 if (input.startsWith("mark")) {
@@ -29,7 +38,7 @@ public class Tel {
                         Task task = new Deadline(params[0], params[1]);
                         adder(tasks, task);
                     } catch (IllegalArgumentException i) {
-                        prettyError("should have a /by separator!");
+                        prettyPrint("Invalid input, /by separator required!");
                     }
                 } else if (input.startsWith("event")) {
                     try {
@@ -38,21 +47,24 @@ public class Tel {
                         Task task = new Event(params1[0], params2[0], params2[1]);
                         adder(tasks, task);
                     } catch (IllegalArgumentException i) {
-                        prettyError("should have a /from & a /to separator!");
+                        prettyPrint("Invalid input, /from & a /to separators required!");
                     }
                 } else if (Objects.equals(input, "list")) {
                     getList(tasks);
+                } else if (Objects.equals(input, "bye")) {
+                    break;
                 } else {
-                    prettyError("should start with mark/unmark/todo/deadline/event!");
+                    prettyPrint("Input should start with mark/unmark/todo/deadline/event!");
                 }
             } catch (StringIndexOutOfBoundsException s) {
-                prettyError("cannot be empty!");
+                prettyPrint("Input cannot be empty!");
             } catch (IllegalArgumentException i) {
-                prettyError("needs a number from 1 to " + tasks.size());
+                prettyPrint("Input must be between 1 & " + tasks.size());
             }
             input = scanner.nextLine();
         } while(!Objects.equals(input, "bye"));
         System.out.println(newLine() + "\n    Bye. Hope to see you again soon!\n" + newLine());
+        fileWriter(tasks);
     }
 
     public static String newLine() {
@@ -88,6 +100,48 @@ public class Tel {
         System.out.println(newLine());
     }
 
+    public static List<Task> fileReader() {
+        List<Task> tasks = new ArrayList<>();
+        File f = new File("./tel.txt");
+        try (Scanner r = new Scanner(f)) {
+            while (r.hasNextLine()) {
+                String[] data = r.nextLine().split(" \\| ");
+                switch(data[0]) {
+                case "D":
+                    tasks.add(new Deadline(data[2], data[3]));
+                    break;
+                case "E":
+                    tasks.add(new Event(data[2], data[3], data[4]));
+                    break;
+                case "T":
+                    tasks.add(new Todo(data[2]));
+                    break;
+                default:
+                    throw new IllegalArgumentException();
+                }
+                tasks.get(tasks.size() - 1).setStatusIcon(Integer.parseInt(data[1]) == 1);
+            }
+        } catch (FileNotFoundException e) {
+            prettyPrint("No task file found! Starting from clean state.");
+        } catch (IllegalArgumentException e) {
+            prettyPrint("Task file is corrupted! Starting from clean state.");
+        }
+        return tasks;
+    }
+
+    public static void fileWriter(List<Task> tasks) {
+        try {
+            FileWriter w = new FileWriter("./tel.txt");
+            for (Task task : tasks) {
+                w.write(task.toFile() + "\n");
+            }
+            w.close();
+            System.out.println("Successfully wrote to the file.");
+        } catch (IOException e) {
+            prettyPrint("State is corrupted! Unable to write to task file.");
+        }
+    }
+
     public static void getList(List<Task> tasks) {
         System.out.println(newLine());
         System.out.println("    Here are the tasks in your list:");
@@ -114,9 +168,9 @@ public class Tel {
         }
     }
 
-    public static void prettyError(String message) {
+    public static void prettyPrint(String message) {
         System.out.println(newLine());
-        System.out.println("    Your input is invalid, it " + message);
+        System.out.println("    " + message);
         System.out.println(newLine());
     }
 }
