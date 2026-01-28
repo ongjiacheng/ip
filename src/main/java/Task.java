@@ -15,7 +15,7 @@ public class Task {
         this.isDone = bool;
     }
 
-    public String toFile() { return String.valueOf(this.isDone ? 1 : 0) + " | " + this.description; }
+    public String toFile() { return (this.isDone ? 1 : 0) + " | " + this.description; }
 
     @Override
     public String toString() {
