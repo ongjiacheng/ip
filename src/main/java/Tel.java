@@ -1,8 +1,3 @@
-import java.io.File;
-import java.io.FileWriter;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -11,82 +6,82 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 
 public class Tel {
-    private Storage storage;
+    private final Storage storage;
     private TaskList tasks;
-    private Ui ui;
 
-    /*
     public Tel(String filePath) {
-        ui = new Ui();
+        Ui ui = new Ui();
         storage = new Storage(filePath);
         try {
-            tasks = new TaskList(storage.load());
-        } catch (DukeException e) {
+            tasks = storage.load();
+        } catch (TelException t) {
             ui.showLoadingError();
             tasks = new TaskList();
         }
     }
 
-    public void run() {}
-     */
-
-    public static void main(String[] args) {
-        TaskList tasks = new TaskList();
-        fileReader(tasks);
-
+    public void run() {
         System.out.println(
                 newLine() + "\n    Hello! I'm Tel.\n    What can I do for you?\n" + newLine()
         );
 
-        Scanner scanner = new Scanner(System.in);
-        String input = scanner.nextLine();
-        do {
-            try {
-                if (input.startsWith("mark")) {
-                    int index = validateNumber(tasks, input, 5);
-                    tasks.markDone(index, true);
-                } else if (input.startsWith("unmark")) {
-                    int index = validateNumber(tasks, input, 5);
-                    tasks.markDone(index, false);
-                } else if (input.startsWith("delete")) {
-                    int index = validateNumber(tasks, input, 7);
-                    tasks.delete(index);
-                } else if (input.startsWith("todo")) {
-                    tasks.add(new Todo(input.substring(5)));
-                } else if (input.startsWith("deadline")) {
-                    try {
-                        String[] params = validateSplit(input.substring(9), " /by ");
-                        LocalDateTime ldt = dateConverter(params[1]);
-                        tasks.add(new Deadline(params[0], ldt));
-                    } catch (IllegalArgumentException i) {
-                        prettyPrint("Invalid input, /by separator required!");
+        try {
+            Scanner scanner = new Scanner(System.in);
+            String input = scanner.nextLine();
+            do {
+                try {
+                    if (input.startsWith("mark")) {
+                        int index = validateNumber(tasks, input, 5);
+                        System.out.println(tasks.markDone(index, true));
+                    } else if (input.startsWith("unmark")) {
+                        int index = validateNumber(tasks, input, 5);
+                        System.out.println(tasks.markDone(index, false));
+                    } else if (input.startsWith("delete")) {
+                        int index = validateNumber(tasks, input, 7);
+                        System.out.println(tasks.delete(index));
+                    } else if (input.startsWith("todo")) {
+                        System.out.println(tasks.add(new Todo(input.substring(5))));
+                    } else if (input.startsWith("deadline")) {
+                        try {
+                            String[] params = validateSplit(input.substring(9), " /by ");
+                            LocalDateTime ldt = dateConverter(params[1]);
+                            System.out.println(tasks.add(new Deadline(params[0], ldt)));
+                        } catch (IllegalArgumentException i) {
+                            prettyPrint("Invalid input, /by separator required!");
+                        }
+                    } else if (input.startsWith("event")) {
+                        try {
+                            String[] params1 = validateSplit(input.substring(6), " /from ");
+                            String[] params2 = validateSplit(params1[1], " /to ");
+                            LocalDateTime ldt1 = dateConverter(params2[0]);
+                            LocalDateTime ldt2 = dateConverter(params2[1]);
+                            System.out.println(tasks.add(new Event(params1[0], ldt1, ldt2)));
+                        } catch (IllegalArgumentException i) {
+                            prettyPrint("Invalid input, /from & a /to separators required!");
+                        }
+                    } else if (Objects.equals(input, "list")) {
+                        System.out.println(tasks);
+                    } else if (Objects.equals(input, "bye")) {
+                        break;
+                    } else {
+                        prettyPrint("Input should start with mark/unmark/todo/deadline/event!");
                     }
-                } else if (input.startsWith("event")) {
-                    try {
-                        String[] params1 = validateSplit(input.substring(6), " /from ");
-                        String[] params2 = validateSplit(params1[1], " /to ");
-                        LocalDateTime ldt1 = dateConverter(params2[0]);
-                        LocalDateTime ldt2 = dateConverter(params2[1]);
-                        tasks.add(new Event(params1[0], ldt1, ldt2));
-                    } catch (IllegalArgumentException i) {
-                        prettyPrint("Invalid input, /from & a /to separators required!");
-                    }
-                } else if (Objects.equals(input, "list")) {
-                    System.out.println(tasks);
-                } else if (Objects.equals(input, "bye")) {
-                    break;
-                } else {
-                    prettyPrint("Input should start with mark/unmark/todo/deadline/event!");
+                } catch (StringIndexOutOfBoundsException s) {
+                    prettyPrint("Input cannot be empty!");
+                } catch (IllegalArgumentException i) {
+                    prettyPrint("Input must be between 1 & " + tasks.size());
                 }
-            } catch (StringIndexOutOfBoundsException s) {
-                prettyPrint("Input cannot be empty!");
-            } catch (IllegalArgumentException i) {
-                prettyPrint("Input must be between 1 & " + tasks.size());
-            }
-            input = scanner.nextLine();
-        } while(!Objects.equals(input, "bye"));
-        System.out.println(newLine() + "\n    Bye. Hope to see you again soon!\n" + newLine());
-        fileWriter(tasks);
+                input = scanner.nextLine();
+            } while (!Objects.equals(input, "bye"));
+            System.out.println(newLine() + "\n    Bye. Hope to see you again soon!\n" + newLine());
+            this.storage.dump(tasks);
+        } catch (TelException t) {
+            System.out.println("Aiyo");
+        }
+    }
+
+    public static void main(String[] args) {
+        new Tel("./tel.txt").run();
     }
 
     public static String newLine() {
@@ -118,46 +113,6 @@ public class Tel {
             prettyPrint("Your datetime is wrong! it should be yyyy-mm-dd or dd/MM/yyyy, with HH:mm if necessary.");
         }
         return dt;
-    }
-
-    public static void fileReader(TaskList tasks) {
-        File f = new File("./tel.txt");
-        try (Scanner r = new Scanner(f)) {
-            while (r.hasNextLine()) {
-                String[] data = r.nextLine().split(" \\| ");
-                switch(data[0]) {
-                case "D":
-                    tasks.add(new Deadline(data[2], LocalDateTime.parse(data[3])));
-                    break;
-                case "E":
-                    tasks.add(new Event(data[2], LocalDateTime.parse(data[3]), LocalDateTime.parse(data[4])));
-                    break;
-                case "T":
-                    tasks.add(new Todo(data[2]));
-                    break;
-                default:
-                    throw new IllegalArgumentException();
-                }
-                tasks.getTask(tasks.size() - 1).setStatusIcon(Integer.parseInt(data[1]) == 1);
-            }
-        } catch (FileNotFoundException e) {
-            prettyPrint("No task file found! Starting from clean state.");
-        } catch (IllegalArgumentException e) {
-            prettyPrint("Task file is corrupted! Starting from clean state.");
-        }
-    }
-
-    public static void fileWriter(TaskList tasks) {
-        try {
-            FileWriter w = new FileWriter("./tel.txt");
-            for (Task task : tasks.getTaskList()) {
-                w.write(task.toFile() + "\n");
-            }
-            w.close();
-            System.out.println("Successfully wrote to the file.");
-        } catch (IOException e) {
-            prettyPrint("State is corrupted! Unable to write to task file.");
-        }
     }
 
     public static int validateNumber(TaskList tasks, String input, int start) throws IllegalArgumentException {
