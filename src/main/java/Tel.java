@@ -11,8 +11,28 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 
 public class Tel {
+    private Storage storage;
+    private TaskList tasks;
+    private Ui ui;
+
+    /*
+    public Tel(String filePath) {
+        ui = new Ui();
+        storage = new Storage(filePath);
+        try {
+            tasks = new TaskList(storage.load());
+        } catch (DukeException e) {
+            ui.showLoadingError();
+            tasks = new TaskList();
+        }
+    }
+
+    public void run() {}
+     */
+
     public static void main(String[] args) {
-        List<Task> tasks = fileReader();
+        TaskList tasks = new TaskList();
+        fileReader(tasks);
 
         System.out.println(
                 newLine() + "\n    Hello! I'm Tel.\n    What can I do for you?\n" + newLine()
@@ -24,22 +44,20 @@ public class Tel {
             try {
                 if (input.startsWith("mark")) {
                     int index = validateNumber(tasks, input, 5);
-                    doner(tasks, index, true);
+                    tasks.markDone(index, true);
                 } else if (input.startsWith("unmark")) {
                     int index = validateNumber(tasks, input, 5);
-                    doner(tasks, index, false);
+                    tasks.markDone(index, false);
                 } else if (input.startsWith("delete")) {
                     int index = validateNumber(tasks, input, 7);
-                    deleter(tasks, index);
+                    tasks.delete(index);
                 } else if (input.startsWith("todo")) {
-                    Task task = new Todo(input.substring(5));
-                    adder(tasks, task);
+                    tasks.add(new Todo(input.substring(5)));
                 } else if (input.startsWith("deadline")) {
                     try {
                         String[] params = validateSplit(input.substring(9), " /by ");
                         LocalDateTime ldt = dateConverter(params[1]);
-                        Task task = new Deadline(params[0], ldt);
-                        adder(tasks, task);
+                        tasks.add(new Deadline(params[0], ldt));
                     } catch (IllegalArgumentException i) {
                         prettyPrint("Invalid input, /by separator required!");
                     }
@@ -49,13 +67,12 @@ public class Tel {
                         String[] params2 = validateSplit(params1[1], " /to ");
                         LocalDateTime ldt1 = dateConverter(params2[0]);
                         LocalDateTime ldt2 = dateConverter(params2[1]);
-                        Task task = new Event(params1[0], ldt1, ldt2);
-                        adder(tasks, task);
+                        tasks.add(new Event(params1[0], ldt1, ldt2));
                     } catch (IllegalArgumentException i) {
                         prettyPrint("Invalid input, /from & a /to separators required!");
                     }
                 } else if (Objects.equals(input, "list")) {
-                    getList(tasks);
+                    System.out.println(tasks);
                 } else if (Objects.equals(input, "bye")) {
                     break;
                 } else {
@@ -74,35 +91,6 @@ public class Tel {
 
     public static String newLine() {
         return "    ____________________________________________________________";
-    }
-
-    public static void adder(List<Task> tasks, Task task) {
-        tasks.add(task);
-        System.out.println(newLine());
-        System.out.println("    Got it. I've added this task:");
-        System.out.println("      " + tasks.get(tasks.size() - 1));
-        System.out.println("    Now you have " + tasks.size() + " tasks in the list.");
-        System.out.println(newLine());
-    }
-
-    public static void deleter(List<Task> tasks, int index) {
-        System.out.println(newLine());
-        System.out.println("    Noted. I've removed this task:");
-        System.out.println("      " + tasks.get(index - 1));
-        tasks.remove(index - 1);
-        System.out.println("    Now you have " + tasks.size() + " tasks in the list.");
-        System.out.println(newLine());
-    }
-
-    public static void doner(List<Task> tasks, int index, boolean bool) {
-        tasks.get(index - 1).setStatusIcon(bool);
-        if (bool) {
-            System.out.println(newLine() + "\n    Nice! I've marked this task as done:");
-        } else {
-            System.out.println(newLine() + "\n    OK, I've marked this task as not done yet:");
-        }
-        System.out.println("      " + tasks.get(index - 1));
-        System.out.println(newLine());
     }
 
     public static LocalDateTime dateConverter(String string) {
@@ -132,8 +120,7 @@ public class Tel {
         return dt;
     }
 
-    public static List<Task> fileReader() {
-        List<Task> tasks = new ArrayList<>();
+    public static void fileReader(TaskList tasks) {
         File f = new File("./tel.txt");
         try (Scanner r = new Scanner(f)) {
             while (r.hasNextLine()) {
@@ -151,20 +138,19 @@ public class Tel {
                 default:
                     throw new IllegalArgumentException();
                 }
-                tasks.get(tasks.size() - 1).setStatusIcon(Integer.parseInt(data[1]) == 1);
+                tasks.getTask(tasks.size() - 1).setStatusIcon(Integer.parseInt(data[1]) == 1);
             }
         } catch (FileNotFoundException e) {
             prettyPrint("No task file found! Starting from clean state.");
         } catch (IllegalArgumentException e) {
             prettyPrint("Task file is corrupted! Starting from clean state.");
         }
-        return tasks;
     }
 
-    public static void fileWriter(List<Task> tasks) {
+    public static void fileWriter(TaskList tasks) {
         try {
             FileWriter w = new FileWriter("./tel.txt");
-            for (Task task : tasks) {
+            for (Task task : tasks.getTaskList()) {
                 w.write(task.toFile() + "\n");
             }
             w.close();
@@ -174,16 +160,7 @@ public class Tel {
         }
     }
 
-    public static void getList(List<Task> tasks) {
-        System.out.println(newLine());
-        System.out.println("    Here are the tasks in your list:");
-        for (int i = 1; i <= tasks.size(); i++) {
-            System.out.println("    " + i + "." + tasks.get(i - 1));
-        }
-        System.out.println(newLine());
-    }
-
-    public static int validateNumber(List<Task> tasks, String input, int start) throws IllegalArgumentException {
+    public static int validateNumber(TaskList tasks, String input, int start) throws IllegalArgumentException {
         int index = Integer.parseInt(input.substring(start));
         if (!(1 <= index && index <= tasks.size())) {
             throw new IllegalArgumentException();
