@@ -1,9 +1,15 @@
 package tel;
 
+/**
+ * The base class for the Tel chatbot.
+ */
 public class Tel {
     private final Storage storage;
     private TaskList tasks;
 
+    /**
+     * Initializes chatbot and load list of task from storage.
+     */
     public Tel(String filePath) {
         storage = new Storage(filePath);
         try {
@@ -14,6 +20,9 @@ public class Tel {
         }
     }
 
+    /**
+     * Runs chatbot in a loop, then dump list of task to storage.
+     */
     public void run() {
         Ui.showGreetingMessage();
         int code = 1;
@@ -34,6 +43,9 @@ public class Tel {
         }
     }
 
+    /**
+     * Runs main program.
+     */
     public static void main(String[] args) {
         new Tel("./tel.txt").run();
     }

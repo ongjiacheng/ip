@@ -6,8 +6,6 @@ import java.util.List;
 public class TaskList {
     private final List<Task> tasks = new ArrayList<>();
 
-    public TaskList() {}
-
     public int size() {
         return this.tasks.size();
     }

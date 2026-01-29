@@ -7,14 +7,27 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Scanner;
 
+/**
+ * This class loads and dumps task list between a text file and the program memory.
+ */
 public class Storage {
     private final String filePath;
     private final TaskList tasks = new TaskList();
 
+    /**
+     * Creates Storage object to allow setting of file path.
+     *
+     * @param filePath The file path to write and read the list of tasks.
+     */
     public Storage(String filePath) {
         this.filePath = filePath;
     }
 
+    /**
+     * Load list of tasks from file into the program.
+     *
+     * @throws TelException If file is corrupted or non-existent.
+     */
     public TaskList load() throws TelException {
         File f = new File(filePath);
         try (Scanner r = new Scanner(f)) {
@@ -43,6 +56,11 @@ public class Storage {
         return tasks;
     }
 
+    /**
+     * Dump list of tasks from program into the file.
+     *
+     * @throws TelException If program is corrupted.
+     */
     public void dump(TaskList tasks) throws TelException {
         try {
             FileWriter w = new FileWriter("./tel.txt");

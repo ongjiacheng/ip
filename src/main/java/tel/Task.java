@@ -1,9 +1,17 @@
 package tel;
 
+/**
+ * A task which is extensible.
+ */
 public class Task {
     protected String description;
     protected boolean isDone;
 
+    /**
+     * Creates a task.
+     *
+     * @param description The task description.
+     */
     public Task(String description) {
         this.description = description;
         this.isDone = false;
@@ -17,7 +25,14 @@ public class Task {
         this.isDone = bool;
     }
 
-    public String toFile() { return (this.isDone ? 1 : 0) + " | " + this.description; }
+    /**
+     * Writes the task description in a file-readable format.
+     *
+     * @return The string containing the task attributes.
+     */
+    public String toFile() {
+        return (this.isDone ? 1 : 0) + " | " + this.description;
+    }
 
     @Override
     public String toString() {

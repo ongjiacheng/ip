@@ -6,7 +6,18 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Objects;
 
+/**
+ * This class contains validation and parsing features the program uses.
+ */
 public class Parser {
+    /**
+     * Parses user input into program instructions.
+     *
+     * @param input The user input.
+     * @param tasks The list of tasks.
+     * @return An integer status code of either 0 (exit) or 1 (continue).
+     * @throws TelException If input has invalid commands or separators.
+     */
     public static int parse(String input, TaskList tasks) throws TelException {
         try {
             if (input.startsWith("mark")) {
@@ -59,6 +70,12 @@ public class Parser {
         return 1;
     }
 
+    /**
+     * Validates the date string and converts it into a LocalDateTime object.
+     *
+     * @param string The date string entered by the user.
+     * @return A LocalDateTime object. Null if string is invalid.
+     */
     public static LocalDateTime validateDate(String string) {
         LocalDateTime dt = null;
         try {
@@ -86,6 +103,15 @@ public class Parser {
         return dt;
     }
 
+    /**
+     * Validates task number in command to be within the range of the list of tasks.
+     *
+     * @param tasks The list of tasks.
+     * @param input The command entered by the user.
+     * @param start The starting location of the integer in the substring.
+     * @return An integer.
+     * @throws IllegalArgumentException If input fails format or range check.
+     */
     public static int validateNumber(TaskList tasks, String input, int start) throws IllegalArgumentException {
         int index = Integer.parseInt(input.substring(start));
         if (!(1 <= index && index <= tasks.size())) {
@@ -94,6 +120,14 @@ public class Parser {
         return index;
     }
 
+    /**
+     * Validates command can be split by separator and separates it if so.
+     *
+     * @param input The command entered by the user.
+     * @param separator The string separator to split the command into two.
+     * @return An array of size 2 with the two substrings.
+     * @throws IllegalArgumentException If input fails format check.
+     */
     public static String[] validateSplit(String input, String separator) throws IllegalArgumentException {
         String[] params = input.split(separator, -1);
         if (params.length == 2) {

@@ -2,11 +2,21 @@ package tel;
 
 import java.time.LocalDateTime;
 
+/**
+ * A task that works like an event in a calendar.
+ */
 public class Event extends Task {
 
     protected LocalDateTime start;
     protected LocalDateTime end;
 
+    /**
+     * Creates an event.
+     *
+     * @param description The event description.
+     * @param start The starting datetime.
+     * @param end The ending datetime.
+     */
     public Event(String description, LocalDateTime start, LocalDateTime end) {
         super(description);
         this.start = start;
