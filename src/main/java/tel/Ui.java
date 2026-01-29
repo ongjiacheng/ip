@@ -93,6 +93,30 @@ public class Ui {
     }
 
     /**
+     * Displays a message with all tasks fulfilling the query.
+     *
+     * @param tasks A list of tasks.
+     */
+    public static void showFindMessage(TaskList tasks) {
+        prettyPrint(new String[] {
+                "Here are the matching tasks in your list",
+                tasks.toString()
+        });
+    }
+
+    /**
+     * Display a message with all tasks.
+     *
+     * @param tasks A list of tasks.
+     */
+    public static void showListMessage(TaskList tasks) {
+        prettyPrint(new String[] {
+                "Here are the tasks in your list",
+                tasks.toString()
+        });
+    }
+
+    /**
      * Displays a message verifying that a task has been marked as done or undone.
      * To be used after TaskList.markDone().
      *

@@ -12,31 +12,31 @@ import java.util.Objects;
 public class Parser {
     public static int parse(String input, TaskList tasks) throws TelException {
         try {
-            if (input.startsWith("mark")) {
+            if (input.startsWith("mark ")) {
                 int index = validateNumber(tasks, input, 5);
                 tasks.markDone(index, true);
                 Ui.showMarkMessage(tasks.get(index - 1));
-            } else if (input.startsWith("unmark")) {
+            } else if (input.startsWith("unmark ")) {
                 int index = validateNumber(tasks, input, 5);
                 tasks.markDone(index, false);
                 Ui.showMarkMessage(tasks.get(index - 1));
-            } else if (input.startsWith("delete")) {
+            } else if (input.startsWith("delete ")) {
                 int index = validateNumber(tasks, input, 7);
                 Ui.showDeleteMessage(tasks.get(index), tasks);
                 tasks.delete(index);
-            } else if (input.startsWith("todo")) {
+            } else if (input.startsWith("todo ")) {
                 tasks.add(new Todo(input.substring(5)));
                 Ui.showAddMessage(tasks);
-            } else if (input.startsWith("deadline")) {
+            } else if (input.startsWith("deadline ")) {
                 try {
                     String[] params = validateSplit(input.substring(9), " /by ");
                     LocalDateTime ldt = validateDate(params[1]);
                     tasks.add(new Deadline(params[0], ldt));
                     Ui.showAddMessage(tasks);
-                } catch (IndexOutOfBoundsException | IllegalArgumentException i) {
+                } catch (IllegalArgumentException i) {
                     throw new TelException("/by separator required!");
                 }
-            } else if (input.startsWith("event")) {
+            } else if (input.startsWith("event ")) {
                 try {
                     String[] params1 = validateSplit(input.substring(6), " /from ");
                     String[] params2 = validateSplit(params1[1], " /to ");
@@ -44,17 +44,20 @@ public class Parser {
                     LocalDateTime ldt2 = validateDate(params2[1]);
                     tasks.add(new Event(params1[0], ldt1, ldt2));
                     Ui.showAddMessage(tasks);
-                } catch (IndexOutOfBoundsException | IllegalArgumentException i) {
+                } catch (IllegalArgumentException i) {
                     throw new TelException("/from & a /to separators required!");
                 }
+            } else if (input.startsWith("find ")) {
+                TaskList query = tasks.find(input.substring(5));
+                Ui.showFindMessage(query);
             } else if (Objects.equals(input, "list")) {
-                Ui.prettyPrint(tasks.toString());
+                Ui.showListMessage(tasks);
             } else if (Objects.equals(input, "bye")) {
                 return 0;
             } else {
                 throw new TelException("Input should start with mark/unmark/todo/deadline/event!");
             }
-        } catch (StringIndexOutOfBoundsException s) {
+        } catch (IndexOutOfBoundsException s) {
             throw new TelException("Input cannot be empty!");
         } catch (IllegalArgumentException i) {
             throw new TelException("Input must be between 1 & " + tasks.size());

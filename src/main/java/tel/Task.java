@@ -17,6 +17,10 @@ public class Task {
         this.isDone = false;
     }
 
+    public boolean contains(String key) {
+        return description.contains(key);
+    }
+
     public char getStatusIcon() {
         return (isDone ? 'X' : ' ');
     }
