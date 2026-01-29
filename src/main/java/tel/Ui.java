@@ -52,6 +52,20 @@ public class Ui {
         prettyPrint(message);
     }
 
+    public static void showFindMessage(TaskList tasks) {
+        prettyPrint(new String[] {
+                "Here are the matching tasks in your list",
+                tasks.toString()
+        });
+    }
+
+    public static void showListMessage(TaskList tasks) {
+        prettyPrint(new String[] {
+                "Here are the tasks in your list",
+                tasks.toString()
+        });
+    }
+
     public static void showMarkMessage(Task task) {
         String[] message = new String[2];
         if (Objects.equals(task.getStatusIcon(), 'X')) {
