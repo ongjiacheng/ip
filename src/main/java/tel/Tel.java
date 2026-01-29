@@ -16,12 +16,16 @@ public class Tel {
 
     public void run() {
         Ui.showGreetingMessage();
-        try {
-            int code;
-            do {
+        int code = 1;
+        do {
+            try {
                 String input = Ui.readCommand();
                 code = Parser.parse(input, tasks);
-            } while (code != 0);
+            } catch (TelException t) {
+                Ui.showError(t.getMessage());
+            }
+        } while (code != 0);
+        try {
             storage.dump(tasks);
         } catch (TelException t) {
             Ui.showError(t.getMessage());
