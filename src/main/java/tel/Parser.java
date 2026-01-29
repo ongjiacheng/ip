@@ -7,6 +7,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Objects;
 
 public class Parser {
+
     public static int parse(String input, TaskList tasks) throws TelException {
         try {
             if (input.startsWith("mark")) {
