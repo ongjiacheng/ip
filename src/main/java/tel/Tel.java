@@ -1,3 +1,5 @@
+package tel;
+
 public class Tel {
     private final Storage storage;
     private TaskList tasks;

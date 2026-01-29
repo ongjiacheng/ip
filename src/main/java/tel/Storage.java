@@ -1,3 +1,5 @@
+package tel;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -29,14 +31,14 @@ public class Storage {
                     tasks.add(new Todo(data[2]));
                     break;
                 default:
-                    throw new TelException("Task file is corrupted! Starting from clean state.");
+                    throw new TelException("tel.Task file is corrupted! Starting from clean state.");
                 }
                 tasks.get(tasks.size() - 1).setStatusIcon(Integer.parseInt(data[1]) == 1);
             }
         } catch (FileNotFoundException e) {
             throw new TelException("No task file found! Starting from clean state.");
         } catch (IllegalArgumentException e) {
-            throw new TelException("Task file is corrupted! Starting from clean state.");
+            throw new TelException("tel.Task file is corrupted! Starting from clean state.");
         }
         return tasks;
     }
