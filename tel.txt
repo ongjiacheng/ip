@@ -2,3 +2,5 @@ T | 1 | hey
 T | 1 | u wot mate
 T | 1 | what are you doing?
 T | 0 | another one
+T | 0 | packages
+D | 0 | meeting | 2026-01-29T20:00

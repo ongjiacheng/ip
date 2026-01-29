@@ -64,7 +64,7 @@ public class Ui {
     }
 
     public static void showGreetingMessage() {
-        prettyPrint(new String[]{"Hello! I'm tel.Tel.", "What can I do for you?"});
+        prettyPrint(new String[]{"Hello! I'm Tel.", "What can I do for you?"});
     }
 
     public static void showFarewellMessage() {
