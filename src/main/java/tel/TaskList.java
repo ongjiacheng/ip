@@ -3,6 +3,9 @@ package tel;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A list containing tasks.
+ */
 public class TaskList {
     private final List<Task> tasks = new ArrayList<>();
 
@@ -10,6 +13,12 @@ public class TaskList {
         return this.tasks.size();
     }
 
+    /**
+     * Finds all tasks with substring in name
+     *
+     * @param key Substring to use.
+     * @return List of tasks with substring.
+     */
     public TaskList find(String key) {
         TaskList result = new TaskList();
         for (Task task : tasks) {
@@ -32,11 +41,22 @@ public class TaskList {
         tasks.remove(index - 1);
     }
 
+    /**
+     * Marks task as done or undone.
+     *
+     * @param index Position of task in task list.
+     * @param bool Doneness of task.
+     */
     public void markDone(int index, boolean bool) {
         Task task = tasks.get(index - 1);
         task.setStatusIcon(bool);
     }
 
+    /**
+     * Converts list of tasks to its file representation.
+     *
+     * @return String representation of tasks.
+     */
     public String toFile() {
         StringBuilder str = new StringBuilder();
         for (Task task : tasks) {

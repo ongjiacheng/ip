@@ -15,7 +15,7 @@ public class Tel {
         try {
             tasks = storage.load();
         } catch (TelException t) {
-           Ui.showError(t.getMessage());
+            Ui.showError(t.getMessage());
             tasks = new TaskList();
         }
     }

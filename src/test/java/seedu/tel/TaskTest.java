@@ -1,16 +1,18 @@
 package seedu.tel;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.time.LocalDateTime;
+
 import org.junit.jupiter.api.Test;
+
 import tel.Deadline;
 import tel.Event;
 import tel.Task;
 
-import java.time.LocalDateTime;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 public class TaskTest {
     @Test
-    public void deadlineTest() {
+    public void deadline_project_newDeadline() {
         LocalDateTime dt = LocalDateTime.of(2026, 1, 29, 20, 0);
         Task task = new Deadline("Project", dt);
         task.setStatusIcon(true);

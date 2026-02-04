@@ -10,6 +10,13 @@ import java.util.Objects;
  * This class contains validation and parsing features the program uses.
  */
 public class Parser {
+    /**
+     * Validates the input string and call functions to do actions.
+     *
+     * @param input The input string entered by the user.
+     * @param tasks The task list.
+     * @return 1 if parseable, 0 if not.
+     */
     public static int parse(String input, TaskList tasks) throws TelException {
         try {
             if (input.startsWith("mark ")) {
@@ -74,21 +81,21 @@ public class Parser {
     public static LocalDateTime validateDate(String string) {
         LocalDateTime dt = null;
         try {
-            boolean check_iso = string.charAt(4) == '-' && string.charAt(7) == '-';
-            boolean check_std = string.charAt(2) == '/' && string.charAt(5) == '/';
+            boolean checkIso = string.charAt(4) == '-' && string.charAt(7) == '-';
+            boolean checkStd = string.charAt(2) == '/' && string.charAt(5) == '/';
             if (string.length() == 10) {
                 LocalDate d = null;
-                if (check_iso) {
+                if (checkIso) {
                     d = LocalDate.parse(string);
-                } else if (check_std) {
+                } else if (checkStd) {
                     d = LocalDate.parse(string, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
                 }
                 assert d != null;
                 dt = d.atStartOfDay();
             } else if (string.length() == 16) {
-                if (check_iso) {
+                if (checkIso) {
                     dt = LocalDateTime.parse(string);
-                } else if (check_std) {
+                } else if (checkStd) {
                     dt = LocalDateTime.parse(string, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
                 }
             }

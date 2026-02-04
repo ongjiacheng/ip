@@ -60,9 +60,9 @@ public class Ui {
      */
     public static void showAddMessage(TaskList tasks) {
         prettyPrint(new String[] {
-                "Got it. I've added this task:",
-                String.valueOf(tasks.get(tasks.size() - 1)),
-                "Now you have " + tasks.size() + " tasks in the list."
+            "Got it. I've added this task:",
+            String.valueOf(tasks.get(tasks.size() - 1)),
+            "Now you have " + tasks.size() + " tasks in the list."
         });
     }
 
@@ -76,9 +76,9 @@ public class Ui {
      */
     public static void showDeleteMessage(Task task, TaskList tasks) {
         prettyPrint(new String[] {
-                "Noted. I've removed this task:",
-                task.toString(),
-                "Now you have " + (tasks.size() - 1) + " tasks in the list."
+            "Noted. I've removed this task:",
+            task.toString(),
+            "Now you have " + (tasks.size() - 1) + " tasks in the list."
         });
     }
 
@@ -99,8 +99,8 @@ public class Ui {
      */
     public static void showFindMessage(TaskList tasks) {
         prettyPrint(new String[] {
-                "Here are the matching tasks in your list",
-                tasks.toString()
+            "Here are the matching tasks in your list",
+            tasks.toString()
         });
     }
 
@@ -111,8 +111,8 @@ public class Ui {
      */
     public static void showListMessage(TaskList tasks) {
         prettyPrint(new String[] {
-                "Here are the tasks in your list",
-                tasks.toString()
+            "Here are the tasks in your list",
+            tasks.toString()
         });
     }
 
