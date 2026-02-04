@@ -1,5 +1,7 @@
 package tel;
 
+import java.util.Objects;
+
 /**
  * The base class for the Tel chatbot.
  */
@@ -15,38 +17,39 @@ public class Tel {
         try {
             tasks = storage.load();
         } catch (TelException t) {
-            Ui.showError(t.getMessage());
+            String message = Ui.showError(t.getMessage());
             tasks = new TaskList();
         }
     }
 
     /**
-     * Runs chatbot in a loop, then dump list of task to storage.
+     * Terminates chatbot and dump list of task into storage.
      */
-    public void run() {
-        Ui.showGreetingMessage();
-        int code = 1;
-        do {
-            try {
-                String input = Ui.readCommand();
-                code = Parser.parse(input, tasks);
-            } catch (TelException t) {
-                Ui.showError(t.getMessage());
-            }
-        } while (code != 0);
+    public String exit() {
+        String message = "";
         try {
             storage.dump(tasks);
         } catch (TelException t) {
-            Ui.showError(t.getMessage());
+            message += Ui.showError(t.getMessage()) + "\n";
         } finally {
-            Ui.showFarewellMessage();
+            message += Ui.showFarewellMessage();
         }
+        return message;
     }
 
     /**
-     * Runs main program.
+     * Generates a response for the user's chat message.
      */
-    public static void main(String[] args) {
-        new Tel("./tel.txt").run();
+    public String getResponse(String input) {
+        try {
+            String output = Parser.parse(input, tasks);
+            if (Objects.equals(output, Ui.showFarewellMessage())) {
+                return exit();
+            } else {
+                return output;
+            }
+        } catch (TelException t) {
+            return Ui.showError(t.getMessage());
+        }
     }
 }

@@ -17,50 +17,55 @@ public class Parser {
      * @param tasks The task list.
      * @return 1 if parseable, 0 if not.
      */
-    public static int parse(String input, TaskList tasks) throws TelException {
+    public static String parse(String input, TaskList tasks) throws TelException {
         try {
             if (input.startsWith("mark ")) {
                 int index = validateNumber(tasks, input, 5);
                 tasks.markDone(index, true);
-                Ui.showMarkMessage(tasks.get(index - 1));
+                return Ui.showMarkMessage(tasks.get(index - 1));
             } else if (input.startsWith("unmark ")) {
-                int index = validateNumber(tasks, input, 5);
+                int index = validateNumber(tasks, input, 7);
                 tasks.markDone(index, false);
-                Ui.showMarkMessage(tasks.get(index - 1));
+                return Ui.showMarkMessage(tasks.get(index - 1));
             } else if (input.startsWith("delete ")) {
                 int index = validateNumber(tasks, input, 7);
-                Ui.showDeleteMessage(tasks.get(index), tasks);
+                String message = Ui.showDeleteMessage(tasks.get(index), tasks);
                 tasks.delete(index);
+                return message;
             } else if (input.startsWith("todo ")) {
                 tasks.add(new Todo(input.substring(5)));
-                Ui.showAddMessage(tasks);
+                return Ui.showAddMessage(tasks);
             } else if (input.startsWith("deadline ")) {
+                String message;
                 try {
                     String[] params = validateSplit(input.substring(9), " /by ");
                     LocalDateTime ldt = validateDate(params[1]);
                     tasks.add(new Deadline(params[0], ldt));
-                    Ui.showAddMessage(tasks);
+                    message = Ui.showAddMessage(tasks);
                 } catch (IllegalArgumentException i) {
                     throw new TelException("/by separator required!");
                 }
+                return message;
             } else if (input.startsWith("event ")) {
+                String message;
                 try {
                     String[] params1 = validateSplit(input.substring(6), " /from ");
                     String[] params2 = validateSplit(params1[1], " /to ");
                     LocalDateTime ldt1 = validateDate(params2[0]);
                     LocalDateTime ldt2 = validateDate(params2[1]);
                     tasks.add(new Event(params1[0], ldt1, ldt2));
-                    Ui.showAddMessage(tasks);
+                    message = Ui.showAddMessage(tasks);
                 } catch (IllegalArgumentException i) {
                     throw new TelException("/from & a /to separators required!");
                 }
+                return message;
             } else if (input.startsWith("find ")) {
                 TaskList query = tasks.find(input.substring(5));
-                Ui.showFindMessage(query);
+                return Ui.showFindMessage(query);
             } else if (Objects.equals(input, "list")) {
-                Ui.showListMessage(tasks);
+                return Ui.showListMessage(tasks);
             } else if (Objects.equals(input, "bye")) {
-                return 0;
+                return Ui.showFarewellMessage();
             } else {
                 throw new TelException("Input should start with mark/unmark/todo/deadline/event!");
             }
@@ -69,7 +74,6 @@ public class Parser {
         } catch (IllegalArgumentException i) {
             throw new TelException("Input must be between 1 & " + tasks.size());
         }
-        return 1;
     }
 
     /**
@@ -78,7 +82,7 @@ public class Parser {
      * @param string The date string entered by the user.
      * @return A LocalDateTime object. Null if string is invalid.
      */
-    public static LocalDateTime validateDate(String string) {
+    public static LocalDateTime validateDate(String string) throws TelException {
         LocalDateTime dt = null;
         try {
             boolean checkIso = string.charAt(4) == '-' && string.charAt(7) == '-';
@@ -100,7 +104,9 @@ public class Parser {
                 }
             }
         } catch (DateTimeParseException | NullPointerException n) {
-            Ui.prettyPrint("Your datetime is wrong! it should be yyyy-mm-dd or dd/MM/yyyy, with HH:mm if necessary.");
+            throw new TelException(
+                    "Your datetime is wrong! it should be yyyy-mm-dd or dd/MM/yyyy, with HH:mm if necessary."
+            );
         }
         return dt;
     }

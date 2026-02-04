@@ -8,10 +8,11 @@ import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 
 import tel.Parser;
+import tel.TelException;
 
 public class ParserTest {
     @Test
-    public void validateDate_iso_convertDateToDateTime() {
+    public void validateDate_iso_convertDateToDateTime() throws TelException {
         assertEquals(
                 LocalDateTime.of(2026, 1, 29, 0, 0),
                 Parser.validateDate("2026-01-29")

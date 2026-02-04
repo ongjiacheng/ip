@@ -1,54 +1,36 @@
 package tel;
 
-import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.Scanner;
 
 /**
  * Ensures input is valid and formats the output seen by the user.
  */
 public class Ui {
-    private static final String NEW_LINE = "    ____________________________________________________________";
+    private static final String NEW_LINE = "    ______________________________";
 
     /**
      * Prints a single-line message with padding and decorative new lines.
      *
      * @param message Message to be decorated.
+     * @return Padded message.
      */
-    public static void prettyPrint(String message) {
-        System.out.println(NEW_LINE);
-        System.out.println("    " + message);
-        System.out.println(NEW_LINE);
+    public static String prettyPrint(String message) {
+        return NEW_LINE + "\n    " + message + "\n" + NEW_LINE;
     }
 
     /**
      * Prints a multi-line message with padding and decorative new lines.
      *
      * @param message Message to be decorated.
+     * @return Padded message.
      */
-    public static void prettyPrint(String[] message) {
-        System.out.println(NEW_LINE);
+    public static String prettyPrint(String[] message) {
+        StringBuilder sb = new StringBuilder(NEW_LINE).append("\n");
         for (String line : message) {
-            System.out.println("    " + line);
+            sb.append("    ").append(line).append("\n");
         }
-        System.out.println(NEW_LINE);
-    }
-
-    /**
-     * Reads and returns the user input string if it is valid.
-     *
-     * @return Valid user input string.
-     * @throws TelException If input is empty or not parseable.
-     */
-    public static String readCommand() throws TelException {
-        String input;
-        try {
-            Scanner scanner = new Scanner(System.in);
-            input = scanner.nextLine();
-        } catch (NoSuchElementException | IllegalStateException e) {
-            throw new TelException("Input should start with mark/unmark/todo/deadline/event!");
-        }
-        return input;
+        sb.append(NEW_LINE).append("\n");
+        return sb.toString();
     }
 
     /**
@@ -57,9 +39,10 @@ public class Ui {
      * Displays the latest task in the list of tasks.
      *
      * @param tasks A list of tasks.
+     * @return Formatted message.
      */
-    public static void showAddMessage(TaskList tasks) {
-        prettyPrint(new String[] {
+    public static String showAddMessage(TaskList tasks) {
+        return prettyPrint(new String[] {
             "Got it. I've added this task:",
             String.valueOf(tasks.get(tasks.size() - 1)),
             "Now you have " + tasks.size() + " tasks in the list."
@@ -73,9 +56,10 @@ public class Ui {
      *
      * @param task A task to be deleted.
      * @param tasks A list of tasks.
+     * @return Formatted message.
      */
-    public static void showDeleteMessage(Task task, TaskList tasks) {
-        prettyPrint(new String[] {
+    public static String showDeleteMessage(Task task, TaskList tasks) {
+        return prettyPrint(new String[] {
             "Noted. I've removed this task:",
             task.toString(),
             "Now you have " + (tasks.size() - 1) + " tasks in the list."
@@ -87,18 +71,20 @@ public class Ui {
      * To be used with exceptions as a syntactic sugar for prettyPrint().
      *
      * @param message An error message.
+     * @return Formatted message.
      */
-    public static void showError(String message) {
-        prettyPrint(message);
+    public static String showError(String message) {
+        return prettyPrint(message);
     }
 
     /**
      * Displays a message with all tasks fulfilling the query.
      *
      * @param tasks A list of tasks.
+     * @return Formatted message.
      */
-    public static void showFindMessage(TaskList tasks) {
-        prettyPrint(new String[] {
+    public static String showFindMessage(TaskList tasks) {
+        return prettyPrint(new String[] {
             "Here are the matching tasks in your list",
             tasks.toString()
         });
@@ -108,9 +94,10 @@ public class Ui {
      * Display a message with all tasks.
      *
      * @param tasks A list of tasks.
+     * @return Formatted message.
      */
-    public static void showListMessage(TaskList tasks) {
-        prettyPrint(new String[] {
+    public static String showListMessage(TaskList tasks) {
+        return prettyPrint(new String[] {
             "Here are the tasks in your list",
             tasks.toString()
         });
@@ -121,8 +108,9 @@ public class Ui {
      * To be used after TaskList.markDone().
      *
      * @param task A task which is marked or unmarked.
+     * @return Formatted message.
      */
-    public static void showMarkMessage(Task task) {
+    public static String showMarkMessage(Task task) {
         String[] message = new String[2];
         if (Objects.equals(task.getStatusIcon(), 'X')) {
             message[0] = "Nice! I've marked this task as done:";
@@ -130,20 +118,24 @@ public class Ui {
             message[0] = "OK, I've marked this task as not done yet:";
         }
         message[1] = task.toString();
-        prettyPrint(message);
+        return prettyPrint(message);
     }
 
     /**
      * Says a greeting to the user.
+     *
+     * @return Formatted message.
      */
-    public static void showGreetingMessage() {
-        prettyPrint(new String[]{"Hello! I'm Tel.", "What can I do for you?"});
+    public static String showGreetingMessage() {
+        return prettyPrint(new String[]{"Hello! I'm Tel.", "What can I do for you?"});
     }
 
     /**
      * Says a farewell to the user.
+     *
+     * @return Formatted message.
      */
-    public static void showFarewellMessage() {
-        prettyPrint("Bye. Hope to see you again soon!");
+    public static String showFarewellMessage() {
+        return prettyPrint("Bye. Hope to see you again soon!");
     }
 }
