@@ -13,8 +13,7 @@ src/main/resources/docs/
 *.iml
 bin/
 
-/config/checkstyle/checkstyle.xml
-/config/checkstyle/suppressions.xml
+/config/
 /text-ui-test/ACTUAL.TXT
 text-ui-test/EXPECTED-UNIX.TXT
 
