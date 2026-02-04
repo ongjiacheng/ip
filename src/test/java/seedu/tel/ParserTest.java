@@ -17,7 +17,6 @@ public class ParserTest {
                 Parser.validateDate("2026-01-29")
         );
     }
-    
     @Test
     public void validateSplit_twoSeparators_splitIntoArray() {
         String[] expected = new String[] {"task", "2026-01-29T20:00"};
