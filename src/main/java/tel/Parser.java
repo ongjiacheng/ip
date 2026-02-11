@@ -20,48 +20,19 @@ public class Parser {
     public static String parse(String input, TaskList tasks) throws TelException {
         try {
             if (input.startsWith("mark ")) {
-                int index = validateNumber(tasks, input, 5);
-                tasks.markDone(index, true);
-                return Ui.showMarkMessage(tasks.get(index - 1));
+                return markTask(input, tasks, 5, true);
             } else if (input.startsWith("unmark ")) {
-                int index = validateNumber(tasks, input, 7);
-                tasks.markDone(index, false);
-                return Ui.showMarkMessage(tasks.get(index - 1));
+                return markTask(input, tasks, 7, false);
             } else if (input.startsWith("delete ")) {
-                int index = validateNumber(tasks, input, 7);
-                String message = Ui.showDeleteMessage(tasks.get(index), tasks);
-                tasks.delete(index);
-                return message;
+                return deleteTask(input, tasks);
             } else if (input.startsWith("todo ")) {
-                tasks.add(new Todo(input.substring(5)));
-                return Ui.showAddMessage(tasks);
+                return createToDo(input, tasks);
             } else if (input.startsWith("deadline ")) {
-                String message;
-                try {
-                    String[] params = validateSplit(input.substring(9), " /by ");
-                    LocalDateTime ldt = validateDate(params[1]);
-                    tasks.add(new Deadline(params[0], ldt));
-                    message = Ui.showAddMessage(tasks);
-                } catch (IllegalArgumentException i) {
-                    throw new TelException("/by separator required!");
-                }
-                return message;
+                return createDeadline(input, tasks);
             } else if (input.startsWith("event ")) {
-                String message;
-                try {
-                    String[] params1 = validateSplit(input.substring(6), " /from ");
-                    String[] params2 = validateSplit(params1[1], " /to ");
-                    LocalDateTime ldt1 = validateDate(params2[0]);
-                    LocalDateTime ldt2 = validateDate(params2[1]);
-                    tasks.add(new Event(params1[0], ldt1, ldt2));
-                    message = Ui.showAddMessage(tasks);
-                } catch (IllegalArgumentException i) {
-                    throw new TelException("/from & a /to separators required!");
-                }
-                return message;
+                return createEvent(input, tasks);
             } else if (input.startsWith("find ")) {
-                TaskList query = tasks.find(input.substring(5));
-                return Ui.showFindMessage(query);
+                return findTask(input, tasks);
             } else if (Objects.equals(input, "list")) {
                 return Ui.showListMessage(tasks);
             } else if (Objects.equals(input, "bye")) {
@@ -74,6 +45,101 @@ public class Parser {
         } catch (IllegalArgumentException i) {
             throw new TelException("Input must be between 1 & " + tasks.size());
         }
+    }
+
+    /**
+     * Method to create deadline.
+     *
+     * @param input The input string entered by the user.
+     * @param tasks The task list.
+     * @return Message to be displayed.
+     */
+    private static String createDeadline(String input, TaskList tasks) throws TelException {
+        String message;
+        try {
+            String[] params = validateSplit(input.substring(9), " /by ");
+            LocalDateTime ldt = validateDate(params[1]);
+            tasks.add(new Deadline(params[0], ldt));
+            message = Ui.showAddMessage(tasks);
+        } catch (IllegalArgumentException i) {
+            throw new TelException("/by separator required!");
+        }
+        return message;
+    }
+
+    /**
+     * Method to create event.
+     *
+     * @param input The input string entered by the user.
+     * @param tasks The task list.
+     * @return Message to be displayed.
+     */
+    private static String createEvent(String input, TaskList tasks) throws TelException {
+        String message;
+        try {
+            String[] params1 = validateSplit(input.substring(6), " /from ");
+            String[] params2 = validateSplit(params1[1], " /to ");
+            LocalDateTime ldt1 = validateDate(params2[0]);
+            LocalDateTime ldt2 = validateDate(params2[1]);
+            tasks.add(new Event(params1[0], ldt1, ldt2));
+            message = Ui.showAddMessage(tasks);
+        } catch (IllegalArgumentException i) {
+            throw new TelException("/from & a /to separators required!");
+        }
+        return message;
+    }
+
+    /**
+     * Method to create to-do.
+     *
+     * @param input The input string entered by the user.
+     * @param tasks The task list.
+     * @return Message to be displayed.
+     */
+    private static String createToDo(String input, TaskList tasks) {
+        tasks.add(new Todo(input.substring(5)));
+        return Ui.showAddMessage(tasks);
+    }
+
+    /**
+     * Method to delete task.
+     *
+     * @param input The input string entered by the user.
+     * @param tasks The task list.
+     * @return Message to be displayed.
+     */
+    private static String deleteTask(String input, TaskList tasks) {
+        int index = validateNumber(tasks, input, 7);
+        String message = Ui.showDeleteMessage(tasks.get(index), tasks);
+        tasks.delete(index);
+        return message;
+    }
+
+    /**
+     * Method to find task.
+     *
+     * @param input The input string entered by the user.
+     * @param tasks The task list.
+     * @return Message to be displayed.
+     */
+    private static String findTask(String input, TaskList tasks) {
+        TaskList query = tasks.find(input.substring(5));
+        return Ui.showFindMessage(query);
+    }
+
+    /**
+     * Method to mark task as done or undone.
+     *
+     * @param input The input string entered by the user.
+     * @param tasks The task list.
+     * @param start The starting index of substring.
+     * @param bool The status of the task to be changed to.
+     * @return Message to be displayed.
+     */
+    private static String markTask(String input, TaskList tasks, int start, boolean bool) {
+        int index = validateNumber(tasks, input, start);
+        tasks.markDone(index, bool);
+        return Ui.showMarkMessage(tasks.get(index - 1));
     }
 
     /**
