@@ -20,6 +20,7 @@ public class TaskList {
      * @return List of tasks with substring.
      */
     public TaskList find(String key) {
+        assert key != null : "Key is null!";
         TaskList result = new TaskList();
         for (Task task : tasks) {
             if (task.contains(key)) {
@@ -33,11 +34,23 @@ public class TaskList {
         return this.tasks.get(index);
     }
 
+    /**
+     * Adds task to list of tasks.
+     *
+     * @param task Task to be added.
+     */
     public void add(Task task) {
+        assert task != null : "Task is null!";
         this.tasks.add(task);
     }
 
+    /**
+     * Deletes task from list of tasks
+     *
+     * @param index Index of task to be deleted.
+     */
     public void delete(int index) {
+        assert index >= 1 && index <= tasks.size() : "Index out of range!";
         tasks.remove(index - 1);
     }
 
@@ -48,6 +61,7 @@ public class TaskList {
      * @param bool Doneness of task.
      */
     public void markDone(int index, boolean bool) {
+        assert index >= 1 && index <= tasks.size() : "Index out of range!";
         Task task = tasks.get(index - 1);
         task.setStatusIcon(bool);
     }

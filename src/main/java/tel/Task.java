@@ -13,11 +13,18 @@ public class Task {
      * @param description The task description.
      */
     public Task(String description) {
+        assert description != null : "Description is null!";
         this.description = description;
         this.isDone = false;
     }
 
+    /**
+     * Check if substring is within the task description.
+     *
+     * @param key The substring to check.
+     */
     public boolean contains(String key) {
+        assert description != null : "Description is null!";
         return description.contains(key);
     }
 
@@ -35,11 +42,13 @@ public class Task {
      * @return The string containing the task attributes.
      */
     public String toFile() {
+        assert description != null : "Description is null!";
         return (this.isDone ? 1 : 0) + " | " + this.description;
     }
 
     @Override
     public String toString() {
+        assert description != null : "Description is null!";
         return "[" + this.getStatusIcon() + "] " + this.description;
     }
 }
