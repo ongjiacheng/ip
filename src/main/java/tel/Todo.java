@@ -15,6 +15,15 @@ public class Todo extends Task {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (o instanceof Todo) {
+            return super.equals(o);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
     public String toFile() {
         return "T | " + super.toFile();
     }

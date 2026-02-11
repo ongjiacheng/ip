@@ -22,6 +22,15 @@ public class Deadline extends Task {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (o instanceof Deadline d) {
+            return super.equals(o) && d.by == this.by;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
     public String toFile() {
         return "D | " + super.toFile() + " | " + this.by;
     }

@@ -47,6 +47,15 @@ public class Task {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (o instanceof Task t) {
+            return t.description.equals(this.description) && t.isDone == this.isDone;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
     public String toString() {
         assert description != null : "Description is null!";
         return "[" + this.getStatusIcon() + "] " + this.description;

@@ -41,7 +41,9 @@ public class TaskList {
      */
     public void add(Task task) {
         assert task != null : "Task is null!";
-        this.tasks.add(task);
+        if (tasks.stream().noneMatch(task::equals)) {
+            tasks.add(task);
+        }
     }
 
     /**

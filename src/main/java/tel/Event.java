@@ -25,6 +25,15 @@ public class Event extends Task {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (o instanceof Event e) {
+            return super.equals(o) && e.start == this.start && e.end == this.end;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
     public String toFile() {
         return "E | " + super.toFile() + " | " + this.start + " | " + this.end;
     }
