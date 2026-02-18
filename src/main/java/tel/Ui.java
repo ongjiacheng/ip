@@ -99,7 +99,7 @@ public class Ui {
     public static String showListMessage(TaskList tasks) {
         return prettyPrint(new String[] {
             "Here are the tasks in your list",
-            tasks.toString()
+            tasks.toString().substring(4)
         });
     }
 
