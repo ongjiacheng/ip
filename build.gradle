@@ -48,13 +48,11 @@ test {
 }
 
 application {
-    //mainClass.set("seedu.duke.Duke")
     mainClass.set("tel.Launcher")
 }
 
 shadowJar {
-    archiveBaseName = "duke"
-    archiveClassifier = null
+    archiveFileName = 'tel.jar'
 }
 
 run{
