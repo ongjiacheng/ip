@@ -6,7 +6,7 @@ import java.util.Objects;
  * Ensures input is valid and formats the output seen by the user.
  */
 public class Ui {
-    private static final String NEW_LINE = "    ______________________________";
+    private static final String NEW_LINE = "______________________________";
 
     /**
      * Prints a single-line message with padding and decorative new lines.
@@ -15,7 +15,7 @@ public class Ui {
      * @return Padded message.
      */
     public static String prettyPrint(String message) {
-        return NEW_LINE + "\n    " + message + "\n" + NEW_LINE;
+        return NEW_LINE + "\n" + message + "\n" + NEW_LINE;
     }
 
     /**
@@ -27,7 +27,7 @@ public class Ui {
     public static String prettyPrint(String[] message) {
         StringBuilder sb = new StringBuilder(NEW_LINE).append("\n");
         for (String line : message) {
-            sb.append("    ").append(line).append("\n");
+            sb.append(line).append("\n");
         }
         sb.append(NEW_LINE).append("\n");
         return sb.toString();
@@ -99,7 +99,7 @@ public class Ui {
     public static String showListMessage(TaskList tasks) {
         return prettyPrint(new String[] {
             "Here are the tasks in your list",
-            tasks.toString().substring(4)
+            tasks.toString()
         });
     }
 

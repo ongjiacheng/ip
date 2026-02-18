@@ -39,7 +39,9 @@ public class Parser {
             case "find" -> findTask(args, tasks);
             case "list" -> Ui.showListMessage(tasks);
             case "bye" -> Ui.showFarewellMessage();
-            default -> throw new TelException("Input should startTime with mark/unmark/todo/deadline/event!");
+            default -> throw new TelException(
+                    "Input should start with:\n"
+                    + "bye, deadline, delete, event, find, list, mark, todo, unmark");
             };
         } catch (NumberFormatException e) {
             throw new TelException("Please provide a valid task number.");

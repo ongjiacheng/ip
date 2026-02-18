@@ -1,5 +1,4 @@
-T | 1 | hey
-T | 1 | u wot mate
-T | 0 | what are you doing?
-T | 0 | another one
-D | 0 | meeting | 2026-01-29T20:00
+T | 1 | get groceries
+T | 1 | do project work
+E | 1 | internship interview | 2026-02-19T08:00 | 2026-02-19T09:00
+D | 1 | homework assignment | 2026-02-20T23:59

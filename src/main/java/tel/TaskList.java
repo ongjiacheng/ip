@@ -82,7 +82,7 @@ public class TaskList {
     @Override
     public String toString() {
         return IntStream.range(0, tasks.size())
-                .mapToObj(i -> "    " + (i + 1) + "." + tasks.get(i))
+                .mapToObj(i -> (i + 1) + "." + tasks.get(i))
                 .collect(Collectors.joining("\n"));
     }
 }
