@@ -7,36 +7,36 @@ import java.time.LocalDateTime;
  */
 public class Deadline extends Task {
 
-    protected LocalDateTime by;
+    protected LocalDateTime deadline;
 
     /**
      * Creates a deadline.
      *
      * @param description The event description.
-     * @param by A datetime deadline.
+     * @param deadline A datetime deadline.
      */
-    public Deadline(String description, LocalDateTime by) {
+    public Deadline(String description, LocalDateTime deadline) {
         super(description);
-        assert by != null : "Deadline is empty!";
-        this.by = by;
+        assert deadline != null : "Deadline is empty!";
+        this.deadline = deadline;
     }
 
     @Override
     public boolean equals(Object o) {
         if (o instanceof Deadline d) {
-            return super.equals(o) && d.by == this.by;
+            return super.equals(o) && d.deadline == this.deadline;
         } else {
             return false;
         }
     }
 
     @Override
-    public String toFile() {
-        return "D | " + super.toFile() + " | " + this.by;
+    public String toStorage() {
+        return "D | " + super.toStorage() + " | " + this.deadline;
     }
 
     @Override
     public String toString() {
-        return "[D]" + super.toString() + " (by: " + this.by + ")";
+        return "[D]" + super.toString() + " (by: " + this.deadline + ")";
     }
 }

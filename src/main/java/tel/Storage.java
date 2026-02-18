@@ -64,7 +64,7 @@ public class Storage {
     public void dump(TaskList tasks) throws TelException {
         try {
             FileWriter w = new FileWriter("./tel.txt");
-            w.write(tasks.toFile());
+            w.write(tasks.toStorage());
             w.close();
         } catch (IOException e) {
             throw new TelException("State is corrupted! Unable to write to task file.");

@@ -41,7 +41,7 @@ public class Task {
      *
      * @return The string containing the task attributes.
      */
-    public String toFile() {
+    public String toStorage() {
         assert description != null : "Description is null!";
         return (this.isDone ? 1 : 0) + " | " + this.description;
     }

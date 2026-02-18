@@ -30,7 +30,7 @@ public class MainWindow extends AnchorPane {
     private final Image dukeImage = new Image(this.getClass().getResourceAsStream("/images/2023.jpeg"));
 
     /**
-     * Initialises the application, showing the greeting message.
+     * Initializes the application, showing the greeting message.
      */
     @FXML
     public void initialize() {

@@ -73,9 +73,9 @@ public class TaskList {
      *
      * @return String representation of tasks.
      */
-    public String toFile() {
+    public String toStorage() {
         return tasks.stream()
-                .map(Task::toFile)
+                .map(Task::toStorage)
                 .collect(Collectors.joining("\n"));
     }
 

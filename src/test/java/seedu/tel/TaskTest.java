@@ -20,7 +20,7 @@ public class TaskTest {
     }
 
     @Test
-    public void eventTest() {
+    public void createEvent_meeting_newEvent() {
         LocalDateTime dt1 = LocalDateTime.of(2026, 1, 29, 20, 0);
         LocalDateTime dt2 = LocalDateTime.of(2026, 1, 29, 22, 0);
         Task task = new Event("Meeting", dt1, dt2);

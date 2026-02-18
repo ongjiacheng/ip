@@ -7,39 +7,39 @@ import java.time.LocalDateTime;
  */
 public class Event extends Task {
 
-    protected LocalDateTime start;
-    protected LocalDateTime end;
+    protected LocalDateTime startTime;
+    protected LocalDateTime endTime;
 
     /**
      * Creates an event.
      *
      * @param description The event description.
-     * @param start The starting datetime.
-     * @param end The ending datetime.
+     * @param startTime The starting datetime.
+     * @param endTime The ending datetime.
      */
-    public Event(String description, LocalDateTime start, LocalDateTime end) {
+    public Event(String description, LocalDateTime startTime, LocalDateTime endTime) {
         super(description);
-        assert start != null && end != null && start.isBefore(end) : "End date must be after start date!";
-        this.start = start;
-        this.end = end;
+        assert startTime != null && endTime != null && startTime.isBefore(endTime) : "End must be after start date!";
+        this.startTime = startTime;
+        this.endTime = endTime;
     }
 
     @Override
     public boolean equals(Object o) {
         if (o instanceof Event e) {
-            return super.equals(o) && e.start == this.start && e.end == this.end;
+            return super.equals(o) && e.startTime == this.startTime && e.endTime == this.endTime;
         } else {
             return false;
         }
     }
 
     @Override
-    public String toFile() {
-        return "E | " + super.toFile() + " | " + this.start + " | " + this.end;
+    public String toStorage() {
+        return "E | " + super.toStorage() + " | " + this.startTime + " | " + this.endTime;
     }
 
     @Override
     public String toString() {
-        return "[E]" + super.toString() + " (from: " + this.start + " to: " + this.end + ")";
+        return "[E]" + super.toString() + " (from: " + this.startTime + " to: " + this.endTime + ")";
     }
 }

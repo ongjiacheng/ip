@@ -24,8 +24,8 @@ public class Todo extends Task {
     }
 
     @Override
-    public String toFile() {
-        return "T | " + super.toFile();
+    public String toStorage() {
+        return "T | " + super.toStorage();
     }
 
     @Override
