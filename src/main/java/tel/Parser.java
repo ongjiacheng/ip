@@ -4,12 +4,17 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Objects;
 
 /**
  * This class contains validation and parsing features the program uses.
  */
 public class Parser {
+
+    private static final DateTimeFormatter ISO_DATE = DateTimeFormatter.ISO_LOCAL_DATE;
+    private static final DateTimeFormatter STD_DATE = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final DateTimeFormatter ISO_DATETIME = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private static final DateTimeFormatter STD_DATETIME = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
     /**
      * Validates the input string and call functions to do actions.
      *
@@ -18,32 +23,26 @@ public class Parser {
      * @return 1 if parseable, 0 if not.
      */
     public static String parse(String input, TaskList tasks) throws TelException {
+        String trimmedInput = input.trim();
+        String[] parts = trimmedInput.split(" ", 2);
+        String command = parts[0].toLowerCase();
+        String args = parts.length > 1 ? parts[1] : "";
+
         try {
-            if (input.startsWith("mark ")) {
-                return markTask(input, tasks, 5, true);
-            } else if (input.startsWith("unmark ")) {
-                return markTask(input, tasks, 7, false);
-            } else if (input.startsWith("delete ")) {
-                return deleteTask(input, tasks);
-            } else if (input.startsWith("todo ")) {
-                return createToDo(input, tasks);
-            } else if (input.startsWith("deadline ")) {
-                return createDeadline(input, tasks);
-            } else if (input.startsWith("event ")) {
-                return createEvent(input, tasks);
-            } else if (input.startsWith("find ")) {
-                return findTask(input, tasks);
-            } else if (Objects.equals(input, "list")) {
-                return Ui.showListMessage(tasks);
-            } else if (Objects.equals(input, "bye")) {
-                return Ui.showFarewellMessage();
-            } else {
-                throw new TelException("Input should start with mark/unmark/todo/deadline/event!");
-            }
-        } catch (IndexOutOfBoundsException s) {
-            throw new TelException("Input cannot be empty!");
-        } catch (IllegalArgumentException i) {
-            throw new TelException("Input must be between 1 & " + tasks.size());
+            return switch (command) {
+            case "mark" -> markTask(args, tasks, true);
+            case "unmark" -> markTask(args, tasks, false);
+            case "delete" -> deleteTask(args, tasks);
+            case "todo" -> createToDo(args, tasks);
+            case "deadline" -> createDeadline(args, tasks);
+            case "event" -> createEvent(args, tasks);
+            case "find" -> findTask(args, tasks);
+            case "list" -> Ui.showListMessage(tasks);
+            case "bye" -> Ui.showFarewellMessage();
+            default -> throw new TelException("Input should start with mark/unmark/todo/deadline/event!");
+            };
+        } catch (NumberFormatException e) {
+            throw new TelException("Please provide a valid task number.");
         }
     }
 
@@ -55,16 +54,17 @@ public class Parser {
      * @return Message to be displayed.
      */
     private static String createDeadline(String input, TaskList tasks) throws TelException {
-        String message;
+        if (input.isEmpty()) {
+            throw new TelException("The description of a deadline cannot be empty.");
+        }
         try {
-            String[] params = validateSplit(input.substring(9), " /by ");
-            LocalDateTime ldt = validateDate(params[1]);
-            tasks.add(new Deadline(params[0], ldt));
-            message = Ui.showAddMessage(tasks);
+            String[] params = validateSplit(input, " /by ");
+            LocalDateTime ldt = validateDate(params[1].trim());
+            tasks.add(new Deadline(params[0].trim(), ldt));
+            return Ui.showAddMessage(tasks);
         } catch (IllegalArgumentException i) {
             throw new TelException("/by separator required!");
         }
-        return message;
     }
 
     /**
@@ -75,18 +75,19 @@ public class Parser {
      * @return Message to be displayed.
      */
     private static String createEvent(String input, TaskList tasks) throws TelException {
-        String message;
+        if (input.isEmpty()) {
+            throw new TelException("The description of an event cannot be empty.");
+        }
         try {
-            String[] params1 = validateSplit(input.substring(6), " /from ");
+            String[] params1 = validateSplit(input, " /from ");
             String[] params2 = validateSplit(params1[1], " /to ");
-            LocalDateTime ldt1 = validateDate(params2[0]);
-            LocalDateTime ldt2 = validateDate(params2[1]);
-            tasks.add(new Event(params1[0], ldt1, ldt2));
-            message = Ui.showAddMessage(tasks);
+            LocalDateTime ldt1 = validateDate(params2[0].trim());
+            LocalDateTime ldt2 = validateDate(params2[1].trim());
+            tasks.add(new Event(params1[0].trim(), ldt1, ldt2));
+            return Ui.showAddMessage(tasks);
         } catch (IllegalArgumentException i) {
             throw new TelException("/from & a /to separators required!");
         }
-        return message;
     }
 
     /**
@@ -96,8 +97,11 @@ public class Parser {
      * @param tasks The task list.
      * @return Message to be displayed.
      */
-    private static String createToDo(String input, TaskList tasks) {
-        tasks.add(new Todo(input.substring(5)));
+    private static String createToDo(String input, TaskList tasks) throws TelException {
+        if (input.isEmpty()) {
+            throw new TelException("The description of a todo cannot be empty.");
+        }
+        tasks.add(new Todo(input.trim()));
         return Ui.showAddMessage(tasks);
     }
 
@@ -108,9 +112,9 @@ public class Parser {
      * @param tasks The task list.
      * @return Message to be displayed.
      */
-    private static String deleteTask(String input, TaskList tasks) {
-        int index = validateNumber(tasks, input, 7);
-        String message = Ui.showDeleteMessage(tasks.get(index), tasks);
+    private static String deleteTask(String input, TaskList tasks) throws TelException {
+        int index = validateNumber(tasks, input);
+        String message = Ui.showDeleteMessage(tasks.get(index - 1), tasks);
         tasks.delete(index);
         return message;
     }
@@ -122,8 +126,11 @@ public class Parser {
      * @param tasks The task list.
      * @return Message to be displayed.
      */
-    private static String findTask(String input, TaskList tasks) {
-        TaskList query = tasks.find(input.substring(5));
+    private static String findTask(String input, TaskList tasks) throws TelException {
+        if (input.isEmpty()) {
+            throw new TelException("Please provide a keyword to find.");
+        }
+        TaskList query = tasks.find(input.trim());
         return Ui.showFindMessage(query);
     }
 
@@ -132,12 +139,11 @@ public class Parser {
      *
      * @param input The input string entered by the user.
      * @param tasks The task list.
-     * @param start The starting index of substring.
      * @param bool The status of the task to be changed to.
      * @return Message to be displayed.
      */
-    private static String markTask(String input, TaskList tasks, int start, boolean bool) {
-        int index = validateNumber(tasks, input, start);
+    private static String markTask(String input, TaskList tasks, boolean bool) throws TelException {
+        int index = validateNumber(tasks, input);
         tasks.markDone(index, bool);
         return Ui.showMarkMessage(tasks.get(index - 1));
     }
@@ -149,32 +155,21 @@ public class Parser {
      * @return A LocalDateTime object. Null if string is invalid.
      */
     public static LocalDateTime validateDate(String string) throws TelException {
-        LocalDateTime dt = null;
-        try {
-            boolean checkIso = string.charAt(4) == '-' && string.charAt(7) == '-';
-            boolean checkStd = string.charAt(2) == '/' && string.charAt(5) == '/';
-            if (string.length() == 10) {
-                LocalDate d = null;
-                if (checkIso) {
-                    d = LocalDate.parse(string);
-                } else if (checkStd) {
-                    d = LocalDate.parse(string, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        DateTimeFormatter[] formatters = {ISO_DATETIME, STD_DATETIME, ISO_DATE, STD_DATE};
+
+        for (DateTimeFormatter formatter : formatters) {
+            try {
+                if (formatter == ISO_DATE || formatter == STD_DATE) {
+                    return LocalDate.parse(string, formatter).atStartOfDay();
                 }
-                assert d != null;
-                dt = d.atStartOfDay();
-            } else if (string.length() == 16) {
-                if (checkIso) {
-                    dt = LocalDateTime.parse(string);
-                } else if (checkStd) {
-                    dt = LocalDateTime.parse(string, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
-                }
+                return LocalDateTime.parse(string, formatter);
+            } catch (DateTimeParseException ignored) {
+                // Continue to next formatter
             }
-        } catch (DateTimeParseException | NullPointerException n) {
-            throw new TelException(
-                    "Your datetime is wrong! it should be yyyy-mm-dd or dd/MM/yyyy, with HH:mm if necessary."
-            );
         }
-        return dt;
+        throw new TelException(
+                "Your datetime is wrong! it should be yyyy-MM-dd or dd/MM/yyyy, with HH:mm if necessary."
+        );
     }
 
     /**
@@ -182,16 +177,19 @@ public class Parser {
      *
      * @param tasks The list of tasks.
      * @param input The command entered by the user.
-     * @param start The starting location of the integer in the substring.
      * @return An integer.
-     * @throws IllegalArgumentException If input fails format or range check.
+     * @throws TelException If input fails format or range check.
      */
-    public static int validateNumber(TaskList tasks, String input, int start) throws IllegalArgumentException {
-        int index = Integer.parseInt(input.substring(start));
-        if (!(1 <= index && index <= tasks.size())) {
-            throw new IllegalArgumentException();
+    public static int validateNumber(TaskList tasks, String input) throws TelException {
+        try {
+            int index = Integer.parseInt(input.trim());
+            if (!(1 <= index && index <= tasks.size())) {
+                throw new TelException("Input must be between 1 & " + tasks.size());
+            }
+            return index;
+        } catch (NumberFormatException e) {
+            throw new TelException("Please provide a valid numeric task index.");
         }
-        return index;
     }
 
     /**
@@ -203,8 +201,8 @@ public class Parser {
      * @throws IllegalArgumentException If input fails format check.
      */
     public static String[] validateSplit(String input, String separator) throws IllegalArgumentException {
-        String[] params = input.split(separator, -1);
-        if (params.length == 2) {
+        String[] params = input.split(separator, 2);
+        if (params.length == 2 && !params[0].isBlank() && !params[1].isBlank()) {
             return params;
         } else {
             throw new IllegalArgumentException();
